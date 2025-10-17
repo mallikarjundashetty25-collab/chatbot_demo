@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SupportBot Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    #chatbox {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .message {
+      margin: 10px 0;
+    }
+    .user {
+      text-align: right;
+      color: #1a73e8;
+    }
+    .bot {
+      text-align: left;
+      color: #111;
+    }
+    #inputArea {
+      margin-top: 20px;
+      display: flex;
+    }
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #sendBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <div class="message bot">👋 Hello! I'm SupportBot. Ask me about our hours, location, or services.</div>
+  </div>
+  <div id="inputArea">
+    <input type="text" id="userInput" placeholder="Type your question..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const responses = [
+      {
+        keywords: ["working hours", "open", "time", "hours", "hrs"],
+        answer: "🕘 We are open from 9am to 5pm, Monday to Friday."
+      },
+      {
+        keywords: ["location", "where", "address", "located"],
+        answer: "📍 We're located in San Francisco, CA."
+      },
+      {
+        keywords: ["services", "offer", "do you do", "help with"],
+        answer: "💼 We offer tech support and software consulting."
+      }
+    ];
+
+    function addMessage(message, sender = "user") {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = message;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function getBotResponse(input) {
+      const inputLower = input.toLowerCase();
+      for (const r of responses) {
+        if (r.keywords.some(kw => inputLower.includes(kw))) {
+          return r.answer;
+        }
+      }
+      return "❓ Sorry, I didn’t understand that. Try asking about our hours, location, or services.";
+    }
+
+    function handleUserInput() {
+      const input = userInput.value.trim();
+      if (input === "") return;
+      addMessage(input, "user");
+      const response = getBotResponse(input);
+      setTimeout(() => addMessage(response, "bot"), 500);
+      userInput.value = "";
+    }
+
+    sendBtn.addEventListener("click", handleUserInput);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleUserInput();
+    });
+  </script>
+</body>
+</html>

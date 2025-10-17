@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SupportBot Dynamic</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    #chatbox { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .message { margin: 10px 0; }
+    .user { text-align: right; color: #1a73e8; }
+    .bot { text-align: left; color: #111; }
+    #inputArea { margin-top: 20px; display: flex; }
+    #userInput { flex: 1; padding: 10px; font-size: 16px; }
+    #sendBtn { padding: 10px 20px; font-size: 16px; background: #1a73e8; color: #fff; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <div class="message bot">👋 Hello! I'm SupportBot. What's your name?</div>
+  </div>
+  <div id="inputArea">
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    let userName = null;
+
+    const responses = [
+      {
+        keywords: ["working hours", "open", "time", "hours", "hrs"],
+        answers: [
+          "🕘 We're open from 9am to 5pm, Monday to Friday.",
+          "🕐 Our business hours are 9am to 5pm, weekdays only.",
+          "⏰ You can reach us between 9am and 5pm, Mon–Fri."
+        ]
+      },
+      {
+        keywords: ["location", "where", "address", "located"],
+        answers: [
+          "📍 We're located in San Francisco, CA.",
+          "🏙️ Our office is in San Francisco.",
+          "🗺️ You’ll find us in San Francisco, California."
+        ]
+      },
+      {
+        keywords: ["services", "offer", "do you do", "help with"],
+        answers: [
+          "💼 We offer tech support and software consulting.",
+          "🔧 Our services include IT support and software advice.",
+          "🛠️ We help with tech support and consulting."
+        ]
+      },
+      {
+        keywords: ["time", "date", "day", "clock"],
+        dynamic: true
+      }
+    ];
+
+    function addMessage(message, sender = "user") {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = message;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      return `🕒 It’s currently ${now.toLocaleTimeString()} on ${now.toLocaleDateString()}.`;
+    }
+
+    function getBotResponse(input) {
+      const inputLower = input.toLowerCase();
+
+      if (!userName) {
+        userName = input;
+        return `Nice to meet you, ${userName}! You can ask me about working hours, location, services, or even the current time.`;
+      }
+
+      for (const r of responses) {
+        if (r.keywords.some(kw => inputLower.includes(kw))) {
+          if (r.dynamic) return getCurrentTime();
+          const randomAnswer = r.answers[Math.floor(Math.random() * r.answers.length)];
+          return randomAnswer;
+        }
+      }
+
+      return `❓ Sorry ${userName}, I didn’t understand that. Try asking about hours, location, services, or time.`;
+    }
+
+    function handleUserInput() {
+      const input = userInput.value.trim();
+      if (!input) return;
+      addMessage(input, "user");
+      const response = getBotResponse(input);
+      setTimeout(() => addMessage(response, "bot"), 500);
+      userInput.value = "";
+    }
+
+    sendBtn.addEventListener("click", handleUserInput);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleUserInput();
+    });
+  </script>
+</body>
+</html>
